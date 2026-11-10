@@ -266,10 +266,34 @@ svg { display: block; }
 .form-actions { display: flex; justify-content: flex-end; gap: var(--sp-2); margin-top: var(--sp-4); }
 
 /* ===== Toasts ===== */
-.toasts { position: fixed; bottom: max(var(--sp-4), env(safe-area-inset-bottom, 0px)); right: max(var(--sp-4), env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: var(--sp-2); z-index: 20; max-width: min(360px, calc(100vw - 32px)); }
+.toasts { position: fixed; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); right: max(var(--sp-4), env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: var(--sp-2); z-index: 20; max-width: min(360px, calc(100vw - 32px)); }
 .toast { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm); color: #fff; background: #2b1fc4; box-shadow: var(--shadow-lift); animation: pop 0.25s ease both; }
 .toast.success { background: #0e8f5a; }
 .toast.warning { background: #a15c00; }
+
+/* ===== IT assistant chat widget (bottom right) ===== */
+.assistant { position: fixed; z-index: 9; right: max(var(--sp-4), env(safe-area-inset-right, 0px)); bottom: max(var(--sp-4), env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-end; gap: var(--sp-3); }
+.assistant-fab { position: relative; width: 68px; height: 68px; border: 0; border-radius: 50%; padding: 0; background: linear-gradient(145deg, #7a5cff, #00a3d9); box-shadow: 0 8px 22px rgba(91, 75, 255, 0.45); animation: bob 3s ease-in-out infinite; transition: transform 0.15s ease; }
+.assistant-fab:hover { transform: scale(1.08); animation-play-state: paused; }
+.assistant-fab svg { width: 100%; height: 100%; }
+.assistant-fab .eye { transform-origin: center; transform-box: fill-box; animation: blink 4s infinite; }
+.assistant-fab.speaking .mouth { animation: talk 0.28s ease-in-out infinite alternate; transform-origin: center; transform-box: fill-box; }
+.assistant-hint { position: absolute; right: 78px; top: 14px; white-space: nowrap; background: var(--surface); color: var(--text); font-size: 12px; font-weight: 700; padding: 6px var(--sp-3); border-radius: 999px; box-shadow: var(--shadow); pointer-events: none; animation: pop 0.4s ease both; }
+.assistant.open .assistant-hint { display: none; }
+.assistant-panel { display: none; width: min(320px, calc(100vw - 32px)); background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow-lift); overflow: hidden; }
+.assistant.open .assistant-panel { display: block; animation: pop 0.25s ease both; }
+.assistant-head { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); color: #fff; background: linear-gradient(115deg, #5b4bff, #00a3d9); }
+.assistant-head strong { font-size: 14px; }
+.assistant-head small { display: block; font-size: 11px; opacity: 0.85; }
+.assistant-close { margin-left: auto; border: 0; background: rgba(255,255,255,0.2); color: #fff; width: 28px; height: 28px; border-radius: 50%; font-size: 16px; line-height: 1; }
+.assistant-body { padding: var(--sp-4); display: grid; gap: var(--sp-3); }
+.bubble { background: var(--surface-2); border-radius: 16px 16px 16px 4px; padding: var(--sp-3); font-size: 13px; }
+.assistant-actions { display: grid; gap: var(--sp-2); }
+.btn-wa { background: #25a244; border-color: transparent; color: #fff; text-decoration: none; }
+.btn-wa:hover { background: #1f8f3b; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+@keyframes talk { from { transform: scaleY(0.6); } to { transform: scaleY(1.4); } }
 
 /* ===== Responsive ===== */
 @media (max-width: 1099px) {
@@ -443,6 +467,40 @@ svg { display: block; }
   </section>
 </div>
 
+<!-- ===== IT assistant chat widget ===== -->
+<aside class="assistant" id="assistant" aria-label="IT assistant">
+  <section class="assistant-panel" id="assistantPanel" aria-labelledby="assistantTitle">
+    <div class="assistant-head">
+      <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#fff"/><rect x="16" y="20" width="32" height="26" rx="10" fill="#7a5cff"/><circle cx="26" cy="32" r="3.5" fill="#fff"/><circle cx="38" cy="32" r="3.5" fill="#fff"/><path d="M27 39q5 4 10 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <div><strong id="assistantTitle">IT Assistant</strong><small>Here to help</small></div>
+      <button type="button" class="assistant-close" id="assistantClose" aria-label="Close IT assistant">&times;</button>
+    </div>
+    <div class="assistant-body">
+      <p class="bubble" id="assistantText">I am your IT assistant, how can I help you?</p>
+      <div class="assistant-actions">
+        <a class="btn btn-wa" id="assistantWa" href="#" target="_blank" rel="noopener noreferrer">Chat with IT on WhatsApp</a>
+        <button type="button" class="btn" id="assistantReplay">Play voice message again</button>
+      </div>
+    </div>
+  </section>
+  <button type="button" class="assistant-fab" id="assistantFab" aria-label="Open IT assistant" aria-expanded="false" aria-controls="assistantPanel">
+    <span class="assistant-hint" id="assistantHint">Need IT help?</span>
+    <svg viewBox="0 0 68 68" aria-hidden="true">
+      <line x1="34" y1="9" x2="34" y2="16" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="34" cy="8" r="3.5" fill="#ffd166"/>
+      <rect x="13" y="16" width="42" height="36" rx="15" fill="#fff"/>
+      <rect x="8" y="30" width="5" height="10" rx="2.5" fill="#fff" fill-opacity="0.8"/>
+      <rect x="55" y="30" width="5" height="10" rx="2.5" fill="#fff" fill-opacity="0.8"/>
+      <rect x="19" y="23" width="30" height="22" rx="10" fill="#3a2bd6"/>
+      <ellipse class="eye" cx="28" cy="32" rx="3.6" ry="4.2" fill="#7ff0ff"/>
+      <ellipse class="eye" cx="40" cy="32" rx="3.6" ry="4.2" fill="#7ff0ff"/>
+      <circle cx="23.5" cy="38.5" r="2.6" fill="#ff7aa8" fill-opacity="0.8"/>
+      <circle cx="44.5" cy="38.5" r="2.6" fill="#ff7aa8" fill-opacity="0.8"/>
+      <path class="mouth" d="M30 38.5q4 3.6 8 0" fill="none" stroke="#7ff0ff" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+  </button>
+</aside>
+
 <!--MEETING-POPUP:HTML-->
 <div class="meeting-backdrop" id="meetingPopup">
   <section class="meeting-dialog" role="alertdialog" aria-modal="true" aria-labelledby="meetingTitle" aria-describedby="meetingText">
@@ -470,6 +528,9 @@ svg { display: block; }
    ========================================================================== */
 const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/YOUR_EMAIL@example.com";
 const ID_PREFIX = "UOB-ITPM-";
+// IT assistant widget: WhatsApp Business number (digits only, with country code) and the spoken greeting
+const IT_WHATSAPP_NUMBER = "658888888";
+const IT_GREETING = "I am your IT assistant, how can I help you?";
 
 const STATUSES = ["Backlog", "In Progress", "Blocked", "Done"];
 const PROJECTS = ["Core Banking Upgrade", "Digital Channels", "Cybersecurity Uplift", "Data & Analytics", "Infrastructure & Cloud", "Vendor Management"];
@@ -975,6 +1036,47 @@ function initForm() {
 /* ==========================================================================
    SEED DATA + INIT
    ========================================================================== */
+/* ==========================================================================
+   IT ASSISTANT WIDGET — spoken greeting (Web Speech API, local, no network)
+   and a link to the IT WhatsApp Business number. Nothing from the board is sent.
+   ========================================================================== */
+function initItAssistant() {
+  const root = document.getElementById("assistant");
+  const fab = document.getElementById("assistantFab");
+  const wa = document.getElementById("assistantWa");
+  wa.href = "https://wa.me/" + IT_WHATSAPP_NUMBER + "?text=" + encodeURIComponent("Hi IT team, I need help with ");
+  document.getElementById("assistantText").textContent = IT_GREETING;
+  const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  const replay = document.getElementById("assistantReplay");
+  if (!canSpeak) replay.hidden = true;
+
+  function speak() {
+    if (!canSpeak) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(IT_GREETING);
+    u.lang = "en-US"; u.pitch = 1.35; u.rate = 1.02;
+    const voices = window.speechSynthesis.getVoices();
+    const pick = voices.find(function (v) { return /en[-_]/i.test(v.lang) && /female|samantha|zira|google uk english female|karen|serena/i.test(v.name); }) ||
+                 voices.find(function (v) { return /^en/i.test(v.lang); });
+    if (pick) u.voice = pick;
+    u.onstart = function () { fab.classList.add("speaking"); };
+    u.onend = u.onerror = function () { fab.classList.remove("speaking"); };
+    window.speechSynthesis.speak(u);
+  }
+  function setOpen(open) {
+    root.classList.toggle("open", open);
+    fab.setAttribute("aria-expanded", String(open));
+    if (open) speak(); else if (canSpeak) window.speechSynthesis.cancel();
+  }
+  fab.addEventListener("click", function () { setOpen(!root.classList.contains("open")); });
+  document.getElementById("assistantClose").addEventListener("click", function () { setOpen(false); fab.focus(); });
+  replay.addEventListener("click", speak);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && root.classList.contains("open")) { setOpen(false); fab.focus(); }
+  });
+  if (canSpeak && window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = function () {};
+}
+
 function seedTasks() {
   const seed = [
     ["Migrate FX pricing service to AWS", "Lift-and-shift of the FX pricing engine to the new landing zone.", "Infrastructure & Cloud", "Infrastructure", "Priya Nair", "High", 21, "In Progress"],
@@ -995,6 +1097,7 @@ seedTasks();
 initFilters();
 initForm();
 initTheme();
+initItAssistant();
 initBoardEvents();
 renderBoard();
 

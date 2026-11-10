@@ -19,7 +19,7 @@ jobs:
             echo "Forbidden pattern found"; exit 1; fi
       - name: Only FormSubmit URL allowed
         run: |
-          bad=$(grep -oE 'https?://[^"'"'"' )]+' index.html | grep -v '^https://formsubmit.co/ajax/' || true)
+          bad=$(grep -oE 'https?://[^"'"'"' )]+' index.html | grep -vE '^https://(formsubmit\.co/ajax/|wa\.me/)' || true)
           if [ -n "$bad" ]; then echo "Unexpected URLs:"; echo "$bad"; exit 1; fi
       - name: Validate HTML
         run: |

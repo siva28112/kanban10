@@ -17,7 +17,7 @@ A single-file IT PMO Kanban demo (fictitious bank, internal training tool): ever
 - No persistence of any kind: no `localStorage`, `sessionStorage`, IndexedDB, or cookies. A refresh must reset to the seeded demo data (the UI says so).
 - No `!important` in CSS; no `alert()`/`confirm()` (inline UI only).
 - Use a neutral "IT PMO" text wordmark and blue palette; no real bank logos or branding. Task IDs still use the spec'd `UOB-ITPM-####` format via the `ID_PREFIX` constant.
-- The only network call is the FormSubmit AJAX POST in `notifyNewTask()`. The email address must appear only in `FORMSUBMIT_ENDPOINT` (config block at the top of the script, with the activation comment above it).
+- The only network call is the FormSubmit AJAX POST in `notifyNewTask()`. The IT assistant widget adds one outbound link (not a request): `https://wa.me/<IT_WHATSAPP_NUMBER>`, opened only when the user clicks it. Its spoken greeting uses the browser's local Web Speech API; CI allows only the FormSubmit and wa.me URLs. The email address must appear only in `FORMSUBMIT_ENDPOINT` (config block at the top of the script, with the activation comment above it).
 
 ## Architecture
 
