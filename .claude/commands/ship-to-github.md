@@ -47,6 +47,16 @@ Create or edit `README.md` (keep any user-written content; edit rather than over
 - How to install/run: clone, double-click `index.html`, or `python3 -m http.server 8765`. Mention setting `FORMSUBMIT_ENDPOINT` and the one-time FormSubmit activation email.
 - Notes on constraints (no storage, refresh resets, neutral branding) and a short note on what persistence would require.
 
+## 2b. Screenshot (Playwright MCP)
+
+Requires Node.js and the project-level `playwright` MCP server from `.mcp.json`. If its tools are not available, tell the user to install Node.js and restart the session; do not substitute a mock image.
+
+1. Serve the app locally (`python3 -m http.server 8765` in the background) and open `http://localhost:8765/index.html` with the Playwright MCP tools. Scripts must run, so do not use `file://` snapshots.
+2. Wait for the seeded cards to render, then take a full-page screenshot and save it as `docs/screenshot.png` (create `docs/`). Verify the file exists and is a non-empty PNG.
+3. Add it to `README.md` under the title: `![IT PMO Kanban board](docs/screenshot.png)`. Commit it with the README.
+4. If `PP_Assessment_Task1_Completed.docx` exists in the project root, paste the screenshot into the empty answer box under **Task 2 (A2)** ("Paste your screenshot in the box below"), at a width that fits the page (about 6 inches), without changing other content. Edit a copy first, check the result opens and the Task 1 image is intact, then replace the original. Never commit the .docx. If the design has not been improved with an Agent Skill, tell the user the screenshot does not yet satisfy A2's "redesigned site" wording.
+5. Stop the local server.
+
 ## 3. GitHub About section
 
 Set description, topics and homepage with `gh repo edit <owner/repo>`:

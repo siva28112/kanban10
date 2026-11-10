@@ -9,6 +9,8 @@
 
 An internal demo/training Kanban board for a fictitious bank's IT PMO. One file, no build step, no framework.
 
+![IT PMO Kanban board](docs/screenshot.png)
+
 **Live demo:** https://siva28112.github.io/kanban10/
 
 ## Features
