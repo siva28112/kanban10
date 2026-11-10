@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Forbidden APIs and CSS
+        run: |
+          if grep -nE 'localStorage|sessionStorage|indexedDB|document\.cookie|!important' index.html; then
+            echo "Forbidden pattern found"; exit 1; fi
+      - name: Only FormSubmit URL allowed
+        run: |
+          bad=$(grep -oE 'https?://[^"'"'"' )]+' index.html | grep -v '^https://formsubmit.co/ajax/' || true)
+          if [ -n "$bad" ]; then echo "Unexpected URLs:"; echo "$bad"; exit 1; fi
+      - name: Validate HTML
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq tidy
+          tidy -q -e index.html || [ $? -eq 1 ]
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
